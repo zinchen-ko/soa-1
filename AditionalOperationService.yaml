@@ -7,7 +7,7 @@ servers:
   - url: 'https://tune-it-cloud.service2/api/v1'
 paths:
   /group/{from-group}/move/{to-group}:
-    get:
+    post:
       summary: Move all students from one group to another
       description: Move all students from one group to another
       parameters:
@@ -75,7 +75,7 @@ paths:
               schema:
                 $ref: './StudyGroupService.yaml#/components/schemas/Error'
   /statistics/count-expelled:
-    get:
+    post:
       summary: Count the total number of expelled students in all groups
       description: Count the total number of expelled students in all groups
       tags:

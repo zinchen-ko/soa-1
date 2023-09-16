@@ -440,7 +440,7 @@ paths:
 
   # Extra operations
   /catalog/study-groups/delete-all-by-average-mark/{averageMark}:
-    delete:
+    post:
       summary: Delete all Group whose value is equivalent to averageMark
       description: Delete all object whose value is equivalent to averageMark
       operationId: deleteAllGroupByAverageMark
@@ -504,7 +504,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
   /catalog/study-groups/smallest-coordinates:
-    get:
+    post:
       summary: Get the group with the smallest coordinate field
       description: Get the group with the smallest coordinate field
       operationId: getGroupMinCoordinates
@@ -542,7 +542,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
   /catalog/study-groups/transferred-students-less-than:
-    get:
+    post:
       summary: Get an array of objects whose transferredStudents field value is less than the specified one
       description: Get an array of objects whose transferredStudents field value is less than the specified one
       operationId: getGroupLessTransferredStudents
