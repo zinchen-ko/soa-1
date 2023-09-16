@@ -6,7 +6,7 @@ info:
 servers:
   - url: 'https://localhost:45382/api/v1'
 paths:
-  /catalog/study-group:
+  /catalog/study-groups:
     get:
       summary: Get list of goups
       description: Get list of goups
@@ -210,7 +210,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /catalog/groups/{id}:
+  /catalog/study-groups/{id}:
     get:
       summary: Get existing group by id
       description: Get existing group by id
@@ -389,24 +389,12 @@ paths:
       tags:
         - Catalog
       responses:
-        '204':
+        '200':
           description: The group was successfully deleted
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  code:
-                    type: integer
-                    format: int32
-                    example: 204
-                  message:
-                    type: string
-                    example: The group was successfully deleted
-                  time:
-                    type: string
-                    format: date-time
-                    example: 2023-09-13T00:00:09Z
+                $ref: '#/components/schemas/StudyGroupAllFieldsSchema'
         '400':
           description: Invalid id value
           content:
@@ -451,7 +439,7 @@ paths:
                 $ref: '#/components/schemas/Error'
 
   # Extra operations
-  /catalog/groups/delete-all-by-average-mark/{averageMark}:
+  /catalog/study-groups/delete-all-by-average-mark/{averageMark}:
     delete:
       summary: Delete all Group whose value is equivalent to averageMark
       description: Delete all object whose value is equivalent to averageMark
@@ -515,7 +503,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /catalog/groups/smallest-coordinates:
+  /catalog/study-groups/smallest-coordinates:
     get:
       summary: Get the group with the smallest coordinate field
       description: Get the group with the smallest coordinate field
@@ -528,7 +516,7 @@ paths:
           content:
             application/json:
               schema:
-		$ref: '#/components/schemas/StudyGroupAllFieldsSchema'
+                $ref: '#/components/schemas/StudyGroupAllFieldsSchema'
         '500':
           description: Internal server error
           content:
@@ -553,7 +541,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /catalog/groups/transferred-students-less-than:
+  /catalog/study-groups/transferred-students-less-than:
     get:
       summary: Get an array of objects whose transferredStudents field value is less than the specified one
       description: Get an array of objects whose transferredStudents field value is less than the specified one
@@ -595,14 +583,6 @@ paths:
 # Models
 components:
   schemas:
-    NumberOfStudyGroups:
-      type: object
-      properties:
-        numberOfStudyGroups:
-          type: integer
-          format: int32
-          minimum: 0
-          example: 2
     NumberOfDeletedStudyGroups:
       type: object
       properties:
@@ -733,11 +713,11 @@ components:
           default: null
     StudyGroupsAllFieldsSchemaWithoutPaggination:
       type: object
-	properties:
-	  studyGroups:
+      properties:
+         studyGroups:
             type: array
-	    items:
-	      $ref: '#/components/schemas/StudyGroupAllFieldsSchema'
+            items:
+              $ref: '#/components/schemas/StudyGroupAllFieldsSchema'
 		
 
     Error:
