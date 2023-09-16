@@ -86,9 +86,12 @@ paths:
           content:
             application/json:
               schema:
-                type: integer
-                format: int64
-                example: 1
+                type: object
+                properties:
+                  numberOfExpelledStudents:
+                    type: integer
+                    format: int32
+                    example: 228
         '400':
           description: Invalid parameters supplied
           content:
