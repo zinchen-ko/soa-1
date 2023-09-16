@@ -1,0 +1,133 @@
+openapi: 3.0.3
+info:
+  title: StudyGroup service REST endpoints
+  description: StudyGroup service REST endpoints for SOA Lab_1
+  version: 1.0.0
+servers:
+  - url: 'https://localhost:45392/api/v1'
+paths:
+  /group/{from-group}/move/{to-group}:
+    get:
+      summary: Move all students from one group to another
+      description: Move all students from one group to another
+      parameters:
+        - name: from-group
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: to-group
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      tags:
+        - StudyGroup
+      responses:
+        '200':
+          description: Moved all students from one group to another
+          content:
+            application/json:
+              schema:
+                $ref: './StudyGroupService.yaml#/components/schemas/StudyGroupAllFieldsSchema'
+        '400':
+          description: Invalid parameters supplied
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 400
+                  message:
+                    type: string
+                    example: Invalid parameters supplied
+                  time:
+                    type: string
+                    format: date-time
+                    example: 2023-09-13T00:00:09Z
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 500
+                  message:
+                    type: string
+                    example: Internal server error
+                  time:
+                    type: string
+                    format: date-time
+                    example: 2023-09-13T00:00:09Z
+        default:
+          description: Returns error code, message and time in case of error
+          content:
+            application/json:
+              schema:
+                $ref: './StudyGroupService.yaml#/components/schemas/Error'
+  /statistics/count-expelled:
+    get:
+      summary: Count the total number of expelled students in all groups
+      description: Count the total number of expelled students in all groups
+      tags:
+        - StudyGroup
+      responses:
+        '200':
+          description: Returns the number of expelled students
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+                example: 1
+        '400':
+          description: Invalid parameters supplied
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 400
+                  message:
+                    type: string
+                    example: Invalid parameters supplied
+                  time:
+                    type: string
+                    format: date-time
+                    example: 2023-09-13T00:00:09Z
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 500
+                  message:
+                    type: string
+                    example: Internal server error
+                  time:
+                    type: string
+                    format: date-time
+                    example: 2023-09-13T00:00:09Z
+        default:
+          description: Returns error code, message and time in case of error
+          content:
+            application/json:
+              schema:
+                $ref: './StudyGroupService.yaml#/components/schemas/Error'

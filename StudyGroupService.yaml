@@ -1,0 +1,743 @@
+openapi: 3.0.3
+info:
+  title: StudyGroup service REST endpoints
+  description: StudyGroup service REST endpoints for SOA Lab_1
+  version: 1.0.0
+servers:
+  - url: 'https://localhost:45382/api/v1'
+paths:
+  /catalog/study-group:
+    get:
+      summary: Get list of goups
+      description: Get list of goups
+      operationId: getGroups
+      parameters:
+        - name: sort
+          in: query
+          description: Array of fields that are used for sorting. The "-" sign means sorting in descending order. If queries and deletion order are provided for one field (with and without "-"), an error response will be returned.
+          required: false
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+              default: id
+              enum:
+                - id
+                - name
+                - coordinates.x
+                - coordinates.y
+                - creationDate
+                - studentsCount
+                - transferredStudents
+                - averageMark
+                - semesterEnum
+                - groupAdmin.name
+                - groupAdmin.birthday
+                - groupAdmin.height
+                - groupAdmin.weight
+                - groupAdmin.passportID
+                - -id
+                - -name
+                - -creationDate
+                - -coordinates.x
+                - -coordinates.y
+                - -studentsCount
+                - -transferredStudents
+                - -averageMark
+                - -semesterEnum
+                - -groupAdmin.name
+                - -groupAdmin.birthday
+                - -groupAdmin.height
+                - -groupAdmin.weight
+                - -groupAdmin.passportID
+        - name: filter
+          in: query
+          required: false
+          description: Array of fields used for filtering. Each element must contain the name of the field and the filtering method in parentheses, as well as the value that will be used for filtering. If the value type is incorrect, an error response will be returned.
+          schema:
+            type: array
+            items:
+              type: string
+              example: id[eq]=1
+              pattern: '^(id|name|creationDate|coordinates\.x|coordinates\.y|studentsCount|transferredStudents|averageMark|semesterEnum|view|groupAdmin\.name|groupAdmin\.birthday|groupAdmin\.height|groupAdmin\.weight|groupAdmin\.passportID)\[(eq|ne|gt|lt|lte|gte)\]=.+$'
+          style: deepObject
+          explode: true
+        - name: page
+          in: query
+          required: false
+          description: Specifies the page number to be paginated. If used without the "pageSize" parameter, the page size will be 10. If none of the parameters "page" or "pageSize" is used, then all Groups will be returned.
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+        - name: pageSize
+          in: query
+          required: false
+          description: The specified page size for pagination. If used without the "page" parameter, the first page will be displayed. If none of the parameters "page" or "pageSize" is used, then all Groups will be returned.
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+      tags:
+        - Catalog
+      responses:
+        '200':
+          description: Returns an array of groups based on the specified parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudyGroupsAllFieldsSchema'
+        '400':
+          description: Invalid query param
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 400
+                  message:
+                    type: string
+                    example: Invalid query param value
+                  time:
+                    type: string
+                    format: date-time
+                    example: 2023-09-13T00:00:09Z
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 500
+                  message:
+                    type: string
+                    example: Internal server error
+                  time:
+                    type: string
+                    format: date-time
+                    example: 2023-09-13T00:00:09Z
+        default:
+          description: Returns error code, message and time in case of error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Add new group
+      description: Add new group
+      operationId: addGroup
+      tags:
+        - Catalog
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudyGroupExtraFieldSchema'
+      responses:
+        '200':
+          description: Returns the group that was just added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudyGroupAllFieldsSchema'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 400
+                  message:
+                    type: string
+                    example: transferredStudents должен быть больше 0!
+                  time:
+                    type: string
+                    format: date-time
+                    example: 2023-09-13T00:00:09Z
+        '405':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 405
+                  message:
+                    type: string
+                    example: Validation exception
+                  time:
+                    type: string
+                    format: date-time
+
+                    example: 2023-09-13T00:00:09Z
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 500
+                  message:
+                    type: string
+                    example: Internal server error
+                  time:
+                    type: string
+                    format: date-time
+                    example: 2023-09-13T00:00:09Z
+        default:
+          description: Returns error code, message and time in case of error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /catalog/groups/{id}:
+    get:
+      summary: Get existing group by id
+      description: Get existing group by id
+      operationId: getGroup
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Group id to find
+          schema:
+            type: integer
+            format: int64
+            nullable: false
+            minimum: 0
+            exclusiveMinimum: true
+            example: 1
+      tags:
+        - Catalog
+
+      responses:
+        '200':
+          description: Returns group by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudyGroupAllFieldsSchema'
+        '400':
+          description: Invalid param supplied
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 400
+                  message:
+                    type: string
+                    example: Invalid param supplied
+                  time:
+                    type: string
+                    format: date-time
+                    example: 2023-09-13T00:00:09Z
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 500
+                  message:
+                    type: string
+                    example: Internal server error
+                  time:
+                    type: string
+                    format: date-time
+                    example: 2023-09-13T00:00:09Z
+        default:
+          description: Returns error code, message and time in case of error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update existing group by id
+      description: Update existing group by id
+      operationId: updateGroup
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Group id to update
+          schema:
+            type: integer
+            format: int64
+            nullable: false
+            minimum: 0
+            exclusiveMinimum: true
+            example: 1
+      tags:
+        - Catalog
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudyGroupExtraFieldSchema'
+      responses:
+        '200':
+          description: Returns an updated group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudyGroupAllFieldsSchema'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 400
+                  message:
+                    type: string
+                    example: transferredStudents должен быть больше 0!
+                  time:
+                    type: string
+                    format: date-time
+                    example: 2023-09-13T00:00:09Z
+        '405':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 405
+                  message:
+                    type: string
+                    example: Validation exception
+                  time:
+                    type: string
+                    format: date-time
+                    example: 2023-09-13T00:00:09Z
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 500
+                  message:
+                    type: string
+                    example: Internal server error
+                  time:
+                    type: string
+                    format: date-time
+                    example: 2023-09-13T00:00:09Z
+        default:
+          description: Returns error code, message and time in case of error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete existing group by id
+      description: Delete existing group by id
+      operationId: deleteGroup
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Group id to delete
+          schema:
+            type: integer
+            format: int64
+            nullable: false
+            minimum: 0
+            exclusiveMinimum: true
+            example: 1
+      tags:
+        - Catalog
+      responses:
+        '204':
+          description: The group was successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 204
+                  message:
+                    type: string
+                    example: The group was successfully deleted
+                  time:
+                    type: string
+                    format: date-time
+                    example: 2023-09-13T00:00:09Z
+        '400':
+          description: Invalid id value
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 400
+                  message:
+                    type: string
+                    example: Invalid id value
+                  time:
+                    type: string
+                    format: date-time
+                    example: 2023-09-13T00:00:09Z
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 500
+                  message:
+                    type: string
+                    example: Internal server error
+                  time:
+                    type: string
+                    format: date-time
+                    example: 2023-09-13T00:00:09Z
+        default:
+          description: Returns error code, message and time in case of error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # Extra operations
+  /catalog/groups/delete-all-by-average-mark/{averageMark}:
+    delete:
+      summary: Delete all Group whose value is equivalent to averageMark
+      description: Delete all object whose value is equivalent to averageMark
+      operationId: deleteAllGroupByAverageMark
+      parameters:
+        - name: averageMark
+          in: path
+          required: true
+          description: Group averageMark to delete
+          schema:
+            items:
+              $ref: '#/components/schemas/StudyGroupAllFieldsSchema'
+      tags:
+        - Catalog
+      responses:
+        '200':
+          description: Returns an updated group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NumberOfStudyGroups'
+        '400':
+          description: Invalid view value
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 400
+                  message:
+                    type: string
+                    example: Invalid view value
+                  time:
+                    type: string
+                    format: date-time
+                    example: 2023-09-13T00:00:09Z
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 500
+                  message:
+                    type: string
+                    example: Internal server error
+                  time:
+                    type: string
+                    format: date-time
+                    example: 2023-09-13T00:00:09Z
+        default:
+          description: Returns error code, message and time in case of error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /catalog/groups/get-min-coordinates:
+    get:
+      summary: Get the group with the smallest coordinate field
+      description: Get the group with the smallest coordinate field
+      operationId: getGroupMinCoordinates
+      tags:
+        - Catalog
+      responses:
+        '200':
+          description: Returns the group with the smallest coordinate field
+          content:
+            application/json:
+              schema:
+                type: number
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 500
+                  message:
+                    type: string
+                    example: Internal server error
+                  time:
+                    type: string
+                    format: date-time
+                    example: 2023-09-13T00:00:09Z
+        default:
+          description: Returns error code, message and time in case of error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /catalog/groups/array-transferred-students-less:
+    get:
+      summary: Get an array of objects whose transferredStudents field value is less than the specified one
+      description: Get an array of objects whose transferredStudents field value is less than the specified one
+      operationId: getGroupLessTransferredStudents
+      tags:
+        - Catalog
+      responses:
+        '200':
+          description: Return an array of objects whose transferredStudents field value is less than the specified one
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudyGroupAllFieldsSchema'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 500
+                  message:
+                    type: string
+                    example: Internal server error
+                  time:
+                    type: string
+                    format: date-time
+                    example: 2023-09-13T00:00:09Z
+        default:
+          description: Returns error code, message and time in case of error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+# Models
+components:
+  schemas:
+    NumberOfStudyGroups:
+      type: object
+      properties:
+        numberOfGroups:
+          type: integer
+          format: int32
+          minimum: 0
+          example: 2
+    Semester:
+      type: string
+      enum:
+        - SECOND
+        - THIRD
+        - FOURTH
+        - SIXTH
+        - SEVENTH
+      nullable: true
+      example: SECOND
+    Person:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Kostya
+          nullable: true
+        birthday:
+          type: integer
+          format: date-time
+          nullable: false
+          example: 2023-09-13T00:00:09Z
+        height:
+          type: integer
+          format: int16
+          minimum: 0
+          exclusiveMinimum: true
+          example: 8
+        weight:
+          type: integer
+          format: int32
+          minimum: 0
+          exclusiveMinimum: true
+          example: 8
+        passportID:
+          type: string
+          minLength: 1
+          maxLength: 21
+          example: 8888
+    Coordinates:
+      type: object
+      properties:
+        x:
+          type: integer
+          format: int32
+          nullable: false
+        y:
+          type: number
+          format: float
+          nullable: false
+    StudyGroupExtraFieldSchema:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: false
+          minLength: 1
+          example: My Flat
+        coordinates:
+          $ref: '#/components/schemas/Coordinates'
+        creationDate:
+          type: integer
+          format: date-time
+          nullable: false
+          example: 2023-09-13T00:00:09Z
+        studentsCount:
+          type: integer
+          format: int64
+          minimum: 0
+          exclusiveMinimum: true
+          example: 3
+        transferredStudents:
+          type: integer
+          format: int32
+          minimum: 0
+          exclusiveMinimum: true
+          example: 8
+        averageMark:
+          type: integer
+          format: int32
+          minimum: 0
+          exclusiveMinimum: true
+          example: 10
+        semesterEnum:
+          $ref: '#/components/schemas/Semester'
+        groupAdmin:
+          $ref: '#/components/schemas/Person'
+    StudyGroupAllFieldsSchema:
+      allOf:
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: integer
+              format: int64
+              minimum: 0
+              exclusiveMinimum: true
+              example: 1
+              description: unique identifier of group
+        - $ref: '#/components/schemas/StudyGroupExtraFieldSchema'
+    StudyGroupsAllFieldsSchema:
+      type: object
+      properties:
+        groupGetResponseDtos:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudyGroupAllFieldsSchema'
+        page:
+          type: integer
+          default: null
+        pageSize:
+          type: integer
+          default: null
+        totalPages:
+          type: integer
+          default: null
+        totalCound:
+          type: integer
+          default: null
+    Error:
+      type: object
+      required:
+        - httpCode
+        - message
+        - time
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 404
+        message:
+          type: string
+          example: Not Found
+        time:
+          type: string
+          format: date-time
+          example: 2022-09-19T00:00:09Z
