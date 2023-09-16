@@ -472,7 +472,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NumberOfStudyGroups'
+                $ref: '#/components/schemas/NumberOfDeletedStudyGroups'
         '400':
           description: Invalid view value
           content:
@@ -528,7 +528,7 @@ paths:
           content:
             application/json:
               schema:
-                type: number
+		$ref: '#/components/schemas/StudyGroupAllFieldsSchema'
         '500':
           description: Internal server error
           content:
@@ -566,7 +566,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StudyGroupAllFieldsSchema'
+                $ref: '#/components/schemas/StudyGroupsAllFieldsSchemaWithoutPaggination'
         '500':
           description: Internal server error
           content:
@@ -598,7 +598,15 @@ components:
     NumberOfStudyGroups:
       type: object
       properties:
-        numberOfGroups:
+        numberOfStudyGroups:
+          type: integer
+          format: int32
+          minimum: 0
+          example: 2
+    NumberOfDeletedStudyGroups:
+      type: object
+      properties:
+        numberOfDeletedStudyGroups:
           type: integer
           format: int32
           minimum: 0
@@ -707,7 +715,7 @@ components:
     StudyGroupsAllFieldsSchema:
       type: object
       properties:
-        groupGetResponseDtos:
+        studyGroups:
           type: array
           items:
             $ref: '#/components/schemas/StudyGroupAllFieldsSchema'
@@ -723,6 +731,15 @@ components:
         totalCound:
           type: integer
           default: null
+    StudyGroupsAllFieldsSchemaWithoutPaggination:
+      type: object
+	properties:
+	  studyGroups:
+            type: array
+	    items:
+	      $ref: '#/components/schemas/StudyGroupAllFieldsSchema'
+		
+
     Error:
       type: object
       required:
